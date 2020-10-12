@@ -3,6 +3,7 @@ package com.example.app4_issc511
 import android.content.Context
 import android.content.Intent
 import android.database.CursorWindow
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Base64
@@ -22,6 +23,9 @@ import java.lang.reflect.Field
 
 class MainActivity : AppCompatActivity() {
 
+
+    private val imageConverter: ImageConverter = ImageConverter()
+    public var bitmaps : Bitmap? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -70,12 +74,10 @@ class MainActivity : AppCompatActivity() {
 
             val item = adapterView.getItemAtPosition(position) as Personas
 
+
+
             var intent  =  Intent(this@MainActivity, detallePersona::class.java).apply {
                 putExtra("id", item._idPersona)
-                putExtra("apellido", item._apellidoPersona)
-                putExtra("nombre", item._nombrePersona)
-                putExtra("imgPersona", item._imgPersona) //Aqui puede ser algo
-
             }
             //TODO: Antigua forma que se usa en JAVA
             //intent.putExtra("id",item._idPersona);
@@ -93,6 +95,7 @@ class MainActivity : AppCompatActivity() {
         ArrayAdapter<Personas>(context, R.layout.item_lista, datos)
     {
         private val imageConverter: ImageConverter = ImageConverter()
+
         var _datos: List<Personas>
 
         init {
@@ -105,11 +108,14 @@ class MainActivity : AppCompatActivity() {
                 false
             )
 
+
             val Entidad  = getItem(position)
 
             inflater.lbltitulo.text =  Entidad!!._nombrePersona
             inflater.lblsubtitulo.text =  Entidad!!._apellidoPersona
-            inflater.imageButton.setImageBitmap(imageConverter.bitmap(Entidad!!._imgPersona))
+
+            inflater.profile_image.setImageBitmap(imageConverter.bitmap(Entidad!!._imgPersona))
+
             return inflater
         }
     }

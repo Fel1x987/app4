@@ -1,6 +1,7 @@
 package com.example.app4_issc511
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.CursorWindow
 import android.graphics.Bitmap
@@ -18,9 +19,11 @@ import androidx.core.graphics.drawable.toBitmap
 import com.ablanco.imageprovider.ImageProvider
 import com.ablanco.imageprovider.ImageSource
 import com.example.app4.Modelo.ImageConverter
+import com.example.app4_issc511.Entidades.Personas
 import com.example.app4_issc511.Modelo.DbOpenHelper
 import com.example.app4_issc511.Modelo.PersonasDB
 import kotlinx.android.synthetic.main.activity_detalle_persona.*
+import kotlinx.android.synthetic.main.activity_main.*
 import java.io.ByteArrayOutputStream
 import java.lang.reflect.Field
 
@@ -32,13 +35,10 @@ class detallePersona : AppCompatActivity() {
     private var id = 0
     private var nombre = ""
     private var  apellido = ""
+    private var imgPersona = ""
 
     private val imageConverter: ImageConverter = ImageConverter()
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
-
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detalle_persona)
 
@@ -58,20 +58,36 @@ class detallePersona : AppCompatActivity() {
         if (extras != null) {
 
             id = extras.getInt("id")
-            apellido = extras.getString("apellido").toString()
-            nombre = extras.getString("nombre").toString()
+            obtenerPersona(id);
+        }
+    }
 
-            //img = extras!!
+
+    
 
 
-            //TODO se inicializa los editText con los datos mandados de MainActivity
-            txtNombre.setText(nombre)
-            txtApellido.setText(apellido)
-            imageButton.setImageBitmap(img)
+    fun obtenerPersona(id:Int):ArrayList<Personas>{
 
+        val datasource = PersonasDB(this)
+
+        val registros =  ArrayList<Personas>()
+
+        val cursor =  datasource.consultarPersonas(id)
+
+        while (cursor.moveToNext()){
+            val columnas = Personas(
+                cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3)
+            )
+            registros.add(columnas)
         }
 
+        txtNombre.setText(registros[0]._nombrePersona)
+        txtApellido.setText(registros[0]._apellidoPersona)
+        imageButton.setImageBitmap(imageConverter.bitmap(registros[0]._imgPersona))
+       return registros
     }
+
+
 
     fun TomarFoto(view: View){
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
@@ -124,6 +140,7 @@ class detallePersona : AppCompatActivity() {
         if(id != 0){
             //TODO se realizara una modificación
             var bazar  = imageConverter.base64(img!!)
+            //print(bazar);
             datasource.modificarPersona(id, txtNombre.text.toString(), txtApellido.text.toString(), bazar!!)
             Toast.makeText(
                 applicationContext, "Se editó correctamente",
@@ -131,8 +148,9 @@ class detallePersona : AppCompatActivity() {
             ).show()
         }else {
             // TODO se realizara una inserción
-            // var vic = imageButton.background.toBitmap() //background.toBitmap().toString()
+
             var bazar  = imageConverter.base64(img!!)
+
             datasource.guardarPersona(txtNombre.text.toString(), txtApellido.text.toString(), bazar!!)
             Toast.makeText(
                 applicationContext, "Se guardo correctamente",
