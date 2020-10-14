@@ -17,7 +17,7 @@ class PersonasDB(context: Context) {
 
     fun consultarPersonas():Cursor{
         return database.rawQuery("""
-            select idPersona,nombrePersona,apellidoPersona, imgPersona 
+            select idPersona,nombrePersona,apellidoPersona, imgPersona, edoCivil
               from tblpersonas
         """.trimIndent(),null)
         database.close()
@@ -25,29 +25,31 @@ class PersonasDB(context: Context) {
 
     fun consultarPersonas(idPersona:Int):Cursor{
         return database.rawQuery("""
-            select idPersona,nombrePersona,apellidoPersona, imgPersona 
+            select idPersona,nombrePersona,apellidoPersona, imgPersona,edoCivil
                      from tblpersonas 
                 where idPersona =  $idPersona
         """.trimIndent(),null)
         database.close()
     }
 
-    fun guardarPersona(nombrePersona: String, apellidoPersona: String, imgPersona: String)
+    fun guardarPersona(nombrePersona: String, apellidoPersona: String, imgPersona: String, edoCivil:String)
     {
         val values =  ContentValues()
         values.put("nombrePersona",nombrePersona)
         values.put("apellidoPersona",apellidoPersona)
         values.put("imgPersona", imgPersona)
+        values.put("edoCivil", edoCivil)
         database.insert("tblpersonas",null,values)
         database.close()
     }
 
-    fun modificarPersona(id: Int,nombrePersona: String, apellidoPersona: String, imgPersona: String)
+    fun modificarPersona(id: Int, nombrePersona: String, apellidoPersona: String, imgPersona: String, edoCivil: String)
     {
         val values =  ContentValues()
         values.put("nombrePersona",nombrePersona)
         values.put("apellidoPersona",apellidoPersona)
         values.put("imgPersona", imgPersona)
+        values.put("edoCivil", edoCivil)
         val whereArgs  = arrayOf(id.toString())
 
         database.update("tblpersonas",values,"idPersona=?",whereArgs)
@@ -56,7 +58,6 @@ class PersonasDB(context: Context) {
 
     fun eliminarPersona(id: Int):Boolean{
         val whereArgs = arrayOf(id.toString())
-
         try {
             database.delete("tblpersonas","idPersona=?",whereArgs)
             return true
@@ -66,5 +67,6 @@ class PersonasDB(context: Context) {
             database.close()
         }
     }
+
 
 }

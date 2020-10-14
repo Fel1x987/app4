@@ -22,10 +22,6 @@ import java.lang.reflect.Field
 
 
 class MainActivity : AppCompatActivity() {
-
-
-    private val imageConverter: ImageConverter = ImageConverter()
-    public var bitmaps : Bitmap? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -60,7 +56,7 @@ class MainActivity : AppCompatActivity() {
 
         while (cursor.moveToNext()){
             val columnas = Personas(
-                cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3)
+                cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4)
             )
             registros.add(columnas)
         }
@@ -78,6 +74,7 @@ class MainActivity : AppCompatActivity() {
 
             var intent  =  Intent(this@MainActivity, detallePersona::class.java).apply {
                 putExtra("id", item._idPersona)
+                putExtra("edoCivil", item._edoCivil)
             }
             //TODO: Antigua forma que se usa en JAVA
             //intent.putExtra("id",item._idPersona);

@@ -43,7 +43,8 @@
 
     <EditText
         android:id="@+id/txtApellido"
-        android:layout_height="49dp"
+        android:layout_width="304dp"
+        android:layout_height="50dp"
         android:layout_marginStart="21dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="21dp"
@@ -54,8 +55,7 @@
         app:layout_constraintBottom_toTopOf="@+id/imageButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtNombre"
-        android:layout_width="wrap_content" />
+        app:layout_constraintTop_toBottomOf="@+id/txtNombre" />
 
     <Button
         android:id="@+id/btnAceptar"
@@ -70,6 +70,18 @@
         android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/btnEliminar"
+        app:layout_constraintTop_toBottomOf="@+id/txtApellido" />
+
+    <Spinner
+        android:id="@+id/edoCivil_spinner"
+        android:layout_width="0dp"
+        android:layout_height="42dp"
+        android:layout_marginStart="46dp"
+        android:layout_marginEnd="46dp"
+        app:layout_constraintBottom_toTopOf="@+id/imageButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtApellido" />
 
     <ImageButton

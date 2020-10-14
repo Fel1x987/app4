@@ -1,31 +1,25 @@
 package com.example.app4_issc511
-
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.CursorWindow
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Base64
 import android.view.View
-import android.widget.ImageButton
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.graphics.drawable.toBitmap
 import com.ablanco.imageprovider.ImageProvider
 import com.ablanco.imageprovider.ImageSource
 import com.example.app4.Modelo.ImageConverter
 import com.example.app4_issc511.Entidades.Personas
-import com.example.app4_issc511.Modelo.DbOpenHelper
 import com.example.app4_issc511.Modelo.PersonasDB
 import kotlinx.android.synthetic.main.activity_detalle_persona.*
-import kotlinx.android.synthetic.main.activity_main.*
-import java.io.ByteArrayOutputStream
 import java.lang.reflect.Field
+
 
 class detallePersona : AppCompatActivity() {
 
@@ -33,18 +27,18 @@ class detallePersona : AppCompatActivity() {
     private lateinit var datasource:PersonasDB
 
     private var id = 0
-    private var nombre = ""
-    private var  apellido = ""
-    private var imgPersona = ""
+    private var edoCivil = ""
+    private var positionEstado = 0
+    lateinit var spinner: Spinner
+    private var edoCivil2=""
+
+
 
     private val imageConverter: ImageConverter = ImageConverter()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detalle_persona)
-
         datasource = PersonasDB(this)
-
-
         val extras = this.intent.extras
         //TODO hacer que el cursor de la consulta soporte una tamaño mayor por el uso de Base64  to Bitmap
         try {
@@ -56,34 +50,82 @@ class detallePersona : AppCompatActivity() {
         }
 
         if (extras != null) {
-
             id = extras.getInt("id")
+            edoCivil = extras.getString("edoCivil")!!
+
+            when (edoCivil) {
+                "Casado" -> positionEstado = 0
+                "Soltero" -> positionEstado = 1
+                "Divorciado" -> positionEstado = 2
+            }
+
             obtenerPersona(id);
+        }
+        spinner = findViewById(R.id.edoCivil_spinner)
+        val adapter = ArrayAdapter.createFromResource(
+            this,
+            R.array.edoCivilArray,
+            android.R.layout.simple_spinner_item
+        )
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+
+
+
+        edoCivil_spinner?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+            }
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                if (edoCivil==""){
+                    val civil: String = parent?.getItemAtPosition(position).toString()
+                    edoCivil2 = civil
+                } else {
+                    val civil: String = parent?.getItemAtPosition(position).toString()
+
+                    parent?.setSelection(position);
+
+                    if(positionEstado==2&& position==0){
+                        parent?.setSelection(2);
+                    }
+
+                    if(positionEstado==1&& position==0){
+                        parent?.setSelection(1);
+                        println("hola en el dos"+ position)
+                    }
+
+
+
+
+
+
+                    edoCivil2 = civil
+                }
+
+            }
         }
     }
 
 
-    
-
-
-    fun obtenerPersona(id:Int):ArrayList<Personas>{
-
+    fun obtenerPersona(id: Int):ArrayList<Personas>{
         val datasource = PersonasDB(this)
-
         val registros =  ArrayList<Personas>()
-
         val cursor =  datasource.consultarPersonas(id)
-
         while (cursor.moveToNext()){
             val columnas = Personas(
-                cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3)
+                cursor.getInt(0),
+                cursor.getString(1),
+                cursor.getString(2),
+                cursor.getString(3),
+                cursor.getString(4)
             )
             registros.add(columnas)
         }
-
         txtNombre.setText(registros[0]._nombrePersona)
         txtApellido.setText(registros[0]._apellidoPersona)
         imageButton.setImageBitmap(imageConverter.bitmap(registros[0]._imgPersona))
+
+        /////////////////////////////////////////////////////////////////////////////
        return registros
     }
 
@@ -141,7 +183,13 @@ class detallePersona : AppCompatActivity() {
             //TODO se realizara una modificación
             var bazar  = imageConverter.base64(img!!)
             //print(bazar);
-            datasource.modificarPersona(id, txtNombre.text.toString(), txtApellido.text.toString(), bazar!!)
+            datasource.modificarPersona(
+                id,
+                txtNombre.text.toString(),
+                txtApellido.text.toString(),
+                bazar!!,
+                edoCivil2
+            )
             Toast.makeText(
                 applicationContext, "Se editó correctamente",
                 Toast.LENGTH_SHORT
@@ -151,7 +199,12 @@ class detallePersona : AppCompatActivity() {
 
             var bazar  = imageConverter.base64(img!!)
 
-            datasource.guardarPersona(txtNombre.text.toString(), txtApellido.text.toString(), bazar!!)
+            datasource.guardarPersona(
+                txtNombre.text.toString(),
+                txtApellido.text.toString(),
+                bazar!!,
+                edoCivil2
+            )
             Toast.makeText(
                 applicationContext, "Se guardo correctamente",
                 Toast.LENGTH_SHORT

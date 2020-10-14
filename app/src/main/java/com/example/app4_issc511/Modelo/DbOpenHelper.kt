@@ -4,7 +4,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-val nombreDB = "personas2.db"
+val nombreDB = "personas7.db"
 val versionDB = 4
 
 class DbOpenHelper(context: Context) :
@@ -16,7 +16,8 @@ class DbOpenHelper(context: Context) :
                 idPersona integer primary key autoincrement,
                 nombrePersona text not null,
                 apellidoPersona text not null,
-                imgPersona text not null
+                imgPersona text not null,
+                edoCivil text not null
             )
         """.trimIndent())
     }
