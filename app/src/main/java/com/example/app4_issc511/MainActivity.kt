@@ -76,6 +76,7 @@ class MainActivity : AppCompatActivity() {
                 putExtra("id", item._idPersona)
                 putExtra("edoCivil", item._edoCivil)
             }
+
             //TODO: Antigua forma que se usa en JAVA
             //intent.putExtra("id",item._idPersona);
             startActivity(intent)

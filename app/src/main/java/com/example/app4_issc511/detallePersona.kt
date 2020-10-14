@@ -28,7 +28,7 @@ class detallePersona : AppCompatActivity() {
 
     private var id = 0
     private var edoCivil = ""
-    private var positionEstado = 0
+    private var positionEstado = -1
     lateinit var spinner: Spinner
     private var edoCivil2=""
 
@@ -40,6 +40,7 @@ class detallePersona : AppCompatActivity() {
         setContentView(R.layout.activity_detalle_persona)
         datasource = PersonasDB(this)
         val extras = this.intent.extras
+
         //TODO hacer que el cursor de la consulta soporte una tamaño mayor por el uso de Base64  to Bitmap
         try {
             val field: Field = CursorWindow::class.java.getDeclaredField("sCursorWindowSize")
@@ -52,13 +53,11 @@ class detallePersona : AppCompatActivity() {
         if (extras != null) {
             id = extras.getInt("id")
             edoCivil = extras.getString("edoCivil")!!
-
             when (edoCivil) {
                 "Casado" -> positionEstado = 0
                 "Soltero" -> positionEstado = 1
                 "Divorciado" -> positionEstado = 2
             }
-
             obtenerPersona(id);
         }
         spinner = findViewById(R.id.edoCivil_spinner)
@@ -70,38 +69,26 @@ class detallePersona : AppCompatActivity() {
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = adapter
-
-
-
         edoCivil_spinner?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
+
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 if (edoCivil==""){
                     val civil: String = parent?.getItemAtPosition(position).toString()
                     edoCivil2 = civil
                 } else {
+                    if(positionEstado == 1 || positionEstado == 2 || positionEstado == 0){
+                        parent?.setSelection(positionEstado)
+                        positionEstado = - 1
+                    }
+                    else{
+                        parent?.setSelection(position)
+                    }
                     val civil: String = parent?.getItemAtPosition(position).toString()
-
-                    parent?.setSelection(position);
-
-                    if(positionEstado==2&& position==0){
-                        parent?.setSelection(2);
-                    }
-
-                    if(positionEstado==1&& position==0){
-                        parent?.setSelection(1);
-                        println("hola en el dos"+ position)
-                    }
-
-
-
-
-
-
                     edoCivil2 = civil
                 }
-
             }
         }
     }
